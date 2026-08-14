@@ -1,0 +1,23 @@
+[Unit]
+Description=Authenticated deployment webhook listener
+After=network.target
+
+[Service]
+Type=simple
+User=deployment-webhook
+Group=deployment-webhook
+ExecStart=/usr/local/libexec/deployment-webhook
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/deployment-reconciler
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target
+

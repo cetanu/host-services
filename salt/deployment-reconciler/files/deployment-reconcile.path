@@ -1,0 +1,10 @@
+[Unit]
+Description=Watch for queued application reconciliations
+
+[Path]
+PathExists=/var/lib/deployment-reconciler/pending
+Unit=deployment-reconcile.service
+
+[Install]
+WantedBy=multi-user.target
+
