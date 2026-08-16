@@ -1,5 +1,4 @@
 {% set envoy = salt['pillar.get']('envoy_proxy', {}) %}
-{% if envoy.get('enabled', False) %}
 {% set version = envoy.get('envoy_version', '1.39.0') %}
 {% set envoy_url = envoy.get('envoy_url', 'https://github.com/envoyproxy/envoy/releases/download/v' ~ version ~ '/envoy-' ~ version ~ '-linux-x86_64') %}
 {% set module_url = envoy.get('module_url', 'https://github.com/cetanu/envoy-acme-dynmod/releases/latest/download/libenvoy_acme_dynmod-envoy-' ~ version ~ '.so') %}
@@ -50,7 +49,7 @@ envoy:
     - require:
       - pkg: envoyproxy-packages
 
-/usr/local/lib/envoy/modules/libenvoy_acme_dynmod-envoy-{{ version }}.so:
+/usr/local/lib/envoy/modules/libenvoy_acme_dynmod.so:
   file.managed:
     - source: {{ module_url }}
     - user: root
@@ -61,6 +60,3 @@ envoy:
 {% endif %}
     - require:
       - file: /usr/local/lib/envoy/modules
-
-{% endif %}
-

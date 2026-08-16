@@ -2,10 +2,9 @@
 Description=Update Namecheap Dynamic DNS
 Wants=network-online.target
 After=network-online.target
-Before=caddy.service
+Before=envoy.service
 
 [Service]
 Type=oneshot
 EnvironmentFile=/etc/default/update-ddns
 ExecStart=/usr/local/libexec/update-ddns
-
