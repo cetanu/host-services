@@ -4,6 +4,8 @@
     - user: root
     - group: root
     - mode: '0755'
+    - require:
+      - file: /usr/local/libexec
 
 validate-ddns-runtime-config:
   cmd.run:

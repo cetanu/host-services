@@ -4,6 +4,8 @@
     - user: root
     - group: root
     - mode: '0755'
+    - require:
+      - file: /usr/local/libexec
 
 set-deployment-webhook-config-permissions:
   cmd.run:
