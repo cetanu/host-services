@@ -100,6 +100,15 @@ static_resources:
 {% endif %}
                           route:
                             cluster: {{ route['name'] }}
+{% if route.get('upgrade_configs') %}
+                            upgrade_configs:
+{% for config in route['upgrade_configs'] %}
+                              - upgrade_type: {{ config['upgrade_type'] if config is mapping else config }}
+{% if config is mapping and 'enabled' in config %}
+                                enabled: {{ config['enabled'] | lower }}
+{% endif %}
+{% endfor %}
+{% endif %}
 {% if route.get('path') %}
                         - match:
                             prefix: /

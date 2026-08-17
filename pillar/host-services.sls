@@ -12,6 +12,8 @@ envoy_proxy:
     - name: socketything
       domain: presence.vsyrakis.dev
       port: 4000
+      upgrade_configs:
+        - upgrade_type: websocket
     - name: deployment-webhook
       domain: deploy.vsyrakis.dev
       port: 9100
