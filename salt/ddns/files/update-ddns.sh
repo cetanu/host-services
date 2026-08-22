@@ -1,10 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-metadata_url="http://169.254.169.254/v1/interfaces/0/ipv4/address"
 update_url="https://dynamicdns.park-your-domain.com/update"
-
-ip=$(curl --fail --silent --show-error --max-time 5 "$metadata_url")
 status=0
 
 for record in ${DDNS_RECORDS}; do
@@ -18,8 +15,7 @@ for record in ${DDNS_RECORDS}; do
     if ! response=$(curl --fail --silent --show-error --get "$update_url" \
         --data-urlencode "host=${host}" \
         --data-urlencode "domain=${domain}" \
-        --data-urlencode "password=${DDNS_PASSWORD}" \
-        --data-urlencode "ip=${ip}"); then
+        --data-urlencode "password=${DDNS_PASSWORD}"); then
         echo "Namecheap DDNS request failed for ${fqdn}" >&2
         status=1
         continue
@@ -32,8 +28,7 @@ for record in ${DDNS_RECORDS}; do
         continue
     fi
 
-    echo "Updated ${fqdn} to ${ip}"
+    echo "Updated ${fqdn}"
 done
 
 exit "$status"
-
