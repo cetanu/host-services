@@ -44,15 +44,15 @@ static_resources:
                         "@type": type.googleapis.com/google.protobuf.StringValue
                         value: >-
                           {
-                            "domains":[{% for route in envoy['routes'] %}"{{ route['domain'] }}"{% if not loop.last %},{% endif %}{% endfor %}],
-                            "contact_email":"{{ envoy['acme_contact_email'] }}",
-                            "storage_path":"/var/lib/envoy-acme",
-                            "certificate_delivery":"grpc",
-                            "sds_address":"127.0.0.1:50051",
-                            "secret_name":"edge-certificate",
-                            "acme_directory_url":"https://acme-v02.api.letsencrypt.org/directory",
-                            "renew_before_days":30,
-                            "check_interval_seconds":43200
+                            "domains": {{ envoy['routes'] | map(attribute='domain') | list | tojson }},
+                            "contact_email": "{{ envoy['acme_contact_email'] }}",
+                            "storage_path": "/var/lib/envoy-acme",
+                            "certificate_delivery": "grpc",
+                            "sds_address": "127.0.0.1:50051",
+                            "secret_name": "edge-certificate",
+                            "acme_directory_url": "https://acme-v02.api.letsencrypt.org/directory",
+                            "renew_before_days": 30,
+                            "check_interval_seconds": 43200
                           }
                   - name: envoy.filters.http.router
                     typed_config:
@@ -88,41 +88,43 @@ static_resources:
                 route_config:
                   name: https-routes
                   virtual_hosts:
-{% for route in envoy['routes'] %}
+                    {%- for route in envoy['routes'] %}
                     - name: {{ route['name'] }}
                       domains: [{{ route['domain'] }}]
                       routes:
                         - match:
-{% if route.get('path') %}
-                            path: {{ route['path'] }}
-{% else %}
-                            prefix: /
-{% endif %}
+                            {{ 'path: ' ~ route['path'] if route.get('path') else 'prefix: /' }}
                           route:
                             cluster: {{ route['name'] }}
-{% if route.get('upgrade_configs') %}
+                            {%- if route.get('timeout') is not none %}
+                            timeout: {{ route['timeout'] }}
+                            {%- endif %}
+                            {%- if route.get('idle_timeout') is not none %}
+                            idle_timeout: {{ route['idle_timeout'] }}
+                            {%- endif %}
+                            {%- if route.get('upgrade_configs') %}
                             upgrade_configs:
-{% for config in route['upgrade_configs'] %}
+                              {%- for config in route['upgrade_configs'] %}
                               - upgrade_type: {{ config['upgrade_type'] if config is mapping else config }}
-{% if config is mapping and 'enabled' in config %}
+                                {%- if config is mapping and 'enabled' in config %}
                                 enabled: {{ config['enabled'] | lower }}
-{% endif %}
-{% endfor %}
-{% endif %}
-{% if route.get('path') %}
+                                {%- endif %}
+                              {%- endfor %}
+                            {%- endif %}
+                        {%- if route.get('path') %}
                         - match:
                             prefix: /
                           direct_response:
                             status: 404
-{% endif %}
-{% endfor %}
+                        {%- endif %}
+                    {%- endfor %}
                 http_filters:
                   - name: envoy.filters.http.router
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
 
   clusters:
-{% for route in envoy['routes'] %}
+    {%- for route in envoy['routes'] %}
     - name: {{ route['name'] }}
       connect_timeout: 5s
       type: STATIC
@@ -135,7 +137,7 @@ static_resources:
                     socket_address:
                       address: 127.0.0.1
                       port_value: {{ route['port'] }}
-{% endfor %}
+    {%- endfor %}
     - name: acme-sds
       connect_timeout: 1s
       type: STATIC

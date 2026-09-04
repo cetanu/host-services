@@ -9,6 +9,7 @@ envoy_proxy:
     - name: rtmp-manager
       domain: rtmp.vsyrakis.dev
       port: 3000
+      timeout: 0s
     - name: socketything
       domain: presence.vsyrakis.dev
       port: 4000
