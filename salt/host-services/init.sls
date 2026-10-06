@@ -1,3 +1,6 @@
+include:
+  - salt-reconcile
+
 /usr/local/libexec:
   file.directory:
     - user: root

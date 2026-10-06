@@ -10,3 +10,4 @@
 validate-ddns-runtime-config:
   cmd.run:
     - name: test -s /etc/default/update-ddns
+    - stateful: true

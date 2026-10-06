@@ -13,7 +13,11 @@
 
 validate-envoy-config:
   cmd.run:
-    - name: test -s /etc/envoy/envoy.yaml && /usr/local/bin/envoy --mode validate --config-path /etc/envoy/envoy.yaml
+    - name: |
+        test -s /etc/envoy/envoy.yaml &&
+        /usr/local/bin/envoy --mode validate --config-path /etc/envoy/envoy.yaml &&
+        printf '\nchanged=no\n'
+    - stateful: true
     - env:
         ENVOY_DYNAMIC_MODULES_SEARCH_PATH: /usr/local/lib/envoy/modules
     - require:

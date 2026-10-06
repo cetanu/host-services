@@ -17,6 +17,6 @@ deployment-webhook.service:
     - require:
       - user: deployment-webhook
       - file: /usr/local/libexec/deployment-webhook
-      - cmd: set-deployment-webhook-config-permissions
+      - file: set-deployment-webhook-config-permissions
       - cmd: validate-deployment-webhook-config
       - cmd: reload-systemd-for-deployment-webhook

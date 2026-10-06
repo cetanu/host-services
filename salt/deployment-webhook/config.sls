@@ -8,12 +8,18 @@
       - file: /usr/local/libexec
 
 set-deployment-webhook-config-permissions:
-  cmd.run:
-    - name: chown root:deployment-webhook /etc/deployment-webhook.json && chmod 0640 /etc/deployment-webhook.json
-    - onlyif: test -f /etc/deployment-webhook.json
+  file.managed:
+    - name: /etc/deployment-webhook.json
+    - user: root
+    - group: deployment-webhook
+    - mode: '0640'
+    - create: false
     - require:
       - user: deployment-webhook
 
 validate-deployment-webhook-config:
   cmd.run:
     - name: test -s /etc/deployment-webhook.json
+    - stateful: true
+    - require:
+      - file: set-deployment-webhook-config-permissions
