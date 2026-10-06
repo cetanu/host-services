@@ -10,6 +10,8 @@ envoy_proxy:
       domain: rtmp.vsyrakis.dev
       port: 3000
       timeout: 0s
+      upgrade_configs:
+        - upgrade_type: websocket
     - name: socketything
       domain: presence.vsyrakis.dev
       port: 4000
